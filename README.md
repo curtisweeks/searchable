@@ -12,7 +12,7 @@ This is not optimized for big searches, but sometimes you just need to make it s
 Simply add the package to your `composer.json` file and run `composer update`.
 
 ```
-"jabbtech/searchable": "1.*"
+"jabbtech/searchable": "2.*"
 ```
 
 # Usage
