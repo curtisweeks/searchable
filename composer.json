@@ -23,8 +23,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/database": "4.2.x|~5.0",
-        "ext-mbstring": "*",
-        "curtisweeks/searchable": "2.*"
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
