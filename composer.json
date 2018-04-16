@@ -5,12 +5,12 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Nicolas Lopez",
-            "email": "nicolaslopezj@me.com"
-        },
-        {
             "name": "Curtis Weeks",
             "email": "curtis@jabbtech.com"
+        },
+        {
+            "name": "Nicolas Lopez",
+            "email": "nicolaslopezj@me.com"
         }
     ],
     "repositories": [
@@ -23,8 +23,7 @@
     "require": {
         "php": ">=5.4.0",
         "illuminate/database": "4.2.x|~5.0",
-        "ext-mbstring": "*",
-        "curtisweeks/searchable": "1.*"
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
