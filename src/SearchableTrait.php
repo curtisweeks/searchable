@@ -40,15 +40,18 @@ trait SearchableTrait
     {
         
         $query = clone $q;
+
         $driver = $this->getDatabaseDriver();
 
-        if ($driver != 'sqlsrv') {
-            $query->select($this->getTable() . '.*');
+        if ($driver == 'sqlsrv') {
+            if (empty($query->getQuery()->columns)) {
+                $columns = $this->formatRawSqlsrv($q);
+                $query->select(DB::raw($columns));
+            }
         } else {
-            $columns = $this->formatRawSqlsrv($q);
-            $query->select(DB::raw('TOP 100 PERCENT '.$columns));
+            $query->select($this->getTable() . '.*');
+            $this->makeJoins($query);
         }
-        $this->makeJoins($query);
 
         if ( ! $search)
         {
@@ -172,17 +175,15 @@ trait SearchableTrait
             $selects = collect(DB::connection($this->connection)->getSchemaBuilder()->getColumnListing($this->table));
         }
 
-        $identifiers = $selects->map(function ($item, $key) {
-            $words = explode('.', $item);
-            foreach($words as $word) {
-                $identifier[] = '['.$word.']';
+        $columns = $selects->map(function ($item, $key) {
+            if (strpos($item, '.') !== false) {
+                $identifier = explode('.', $item);
+                return '['.$identifier[0].'].['.$identifier[1].']';
+            } else {
+                return '['.$this->table.'].['.$item.']';
             }
-            return $identifier;
-        });
-        foreach($identifiers as $identifier) {
-            $columnlist[] = implode ('.', $identifier);
-        }
-        $columns = implode(', ', $columnlist);
+        })->implode(',');
+
         return $columns;
     }
 
@@ -218,6 +219,7 @@ trait SearchableTrait
      */
     protected function makeJoins(Builder $query)
     {
+
         foreach ($this->getJoins() as $table => $keys) {
             $query->leftJoin($table, function ($join) use ($keys) {
                 $join->on($keys[0], '=', $keys[1]);
@@ -238,18 +240,18 @@ trait SearchableTrait
     {
 
         $driver = $this->getDatabaseDriver();
+        
         if ($groupBy = $this->getGroupBy()) {
             $clone->groupBy($groupBy);
-        } elseif ($driver == 'sqlsrv') {
-            $columns = $this->formatRawSqlsrv($original);
-            $clone->groupBy(DB::raw($columns));
         } else {
-            $columns = $this->getTable() . '.' .$this->primaryKey;
-
-            $clone->groupBy($columns);
-
+            if ($driver == 'sqlsrv') {
+                $columns = $this->formatRawSqlsrv($original);
+                $clone->groupBy(DB::raw($columns));
+            } else {          
+                $columns = $this->getTable() . '.' .$this->primaryKey;
+                $clone->groupBy($columns);
+            }
             $joins = array_keys(($this->getJoins()));
-
             foreach ($this->getColumns() as $column => $relevance) {
                 array_map(function ($join) use ($column, $clone) {
                     if (Str::contains($column, $join)) {
@@ -330,6 +332,7 @@ trait SearchableTrait
      */
     protected function getSearchQuery(Builder $query, $column, $relevance, array $words, $relevance_multiplier, $pre_word = '', $post_word = '')
     {
+
         $like_comparator = $this->getDatabaseDriver() == 'pgsql' ? 'ILIKE' : 'LIKE';
         $cases = [];
 
