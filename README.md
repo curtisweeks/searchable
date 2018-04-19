@@ -1,7 +1,7 @@
 Laravel Searchable
 ==========================================
 
-Laravel 5 trait to add a `search` method for Eloquent with priorities for each searchable field for the model.
+Laravel 5 trait to add a `search` method for Eloquent which performs prioritized searches in a model.
 
 ## Installation
 
@@ -100,12 +100,11 @@ When used with SQL Server the `search` method supports most eloquent methods wit
 * It is strongly recommended (and required in some cases) that the `select` method is used
     * Column constraints of tables you will join to need to be included in the `select` method
     * Column required by the `where` method need to be included in the `select` method
-* Some methods need to be included _before_ the `search` method
+* Most methods need to be used _before_ the `search` method
     * `join`
     * `leftJoin`
     * `crossJoin`
     * `where`
-    * `take`
 * Include `orderBy('relevance', 'desc')` _after_ the `search` method
 
 ```php
@@ -125,7 +124,6 @@ $users = User::select(
         'posts.body'
     )->leftJoin('posts', 'users.id', 'posts.user_id')
     ->where('users.status', 'active')
-    ->take(50)
     ->serch($query)
     ->orderBy('relevance', 'desc')
     ->get();
