@@ -1,12 +1,12 @@
 Laravel Searchable
 ==========================================
 
-Laravel 5 trait to add a `search` method for Eloquent which performs prioritized searches in a model.
+Laravel trait to add a `search` method for Eloquent which performs prioritized searches in a model.
 
 ## Installation
 
 ```
-$ composer require "jabbtech/searchable": "~2.0"
+$ composer require "jabbtech/searchable": "~3.0"
 ```
 
 ## Configuration
