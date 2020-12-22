@@ -6,7 +6,7 @@ Laravel trait to add a `search` method for Eloquent which performs prioritized s
 ## Installation
 
 ```
-$ composer require "jabbtech/searchable": "~3.0"
+$ composer require "jabbtech/searchable": "^3.0"
 ```
 
 ## Configuration
